@@ -19,7 +19,15 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+	void MoveForward(float Value);
+
+	void MoveRight(float Value);
+
+	void TurnAtRate(float Rate);
+
+	void LookUpAtRate(float Rate);
+
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -32,4 +40,10 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	class UCameraComponent* FollowCamera;
+
+	UPROPERTY(VisibleAnywhere)
+	float BaseTurnRate;
+
+	UPROPERTY(VisibleAnywhere)
+	float BaseLookUpRate;
 };

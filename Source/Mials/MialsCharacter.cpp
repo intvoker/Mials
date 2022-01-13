@@ -7,9 +7,11 @@
 #include "GameFramework/SpringArmComponent.h"
 
 // Sets default values
-AMialsCharacter::AMialsCharacter()
+AMialsCharacter::AMialsCharacter():
+	BaseTurnRate(45.f),
+	BaseLookUpRate(45.f)
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
@@ -25,14 +27,44 @@ AMialsCharacter::AMialsCharacter()
 void AMialsCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+}
+
+void AMialsCharacter::MoveForward(float Value)
+{
+	if (Controller != nullptr && Value != 0.f)
+	{
+		const FRotator Rotation{Controller->GetControlRotation()};
+		const FRotator YawRotation{0.f, Rotation.Yaw, 0.f};
+		const FVector Direction{FRotationMatrix{YawRotation}.GetUnitAxis(EAxis::X)};
+		AddMovementInput(Direction, Value);
+	}
+}
+
+void AMialsCharacter::MoveRight(float Value)
+{
+	if (Controller != nullptr && Value != 0.f)
+	{
+		const FRotator Rotation{Controller->GetControlRotation()};
+		const FRotator YawRotation{0.f, Rotation.Yaw, 0.f};
+		const FVector Direction{FRotationMatrix{YawRotation}.GetUnitAxis(EAxis::Y)};
+		AddMovementInput(Direction, Value);
+	}
+}
+
+void AMialsCharacter::TurnAtRate(float Rate)
+{
+	AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
+}
+
+void AMialsCharacter::LookUpAtRate(float Rate)
+{
+	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
 }
 
 // Called every frame
 void AMialsCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 // Called to bind functionality to input
@@ -40,5 +72,12 @@ void AMialsCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-}
+	check(PlayerInputComponent);
 
+	PlayerInputComponent->BindAxis("MoveForward", this, &AMialsCharacter::MoveForward);
+	PlayerInputComponent->BindAxis("MoveRight", this, &AMialsCharacter::MoveRight);
+	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
+	PlayerInputComponent->BindAxis("TurnRate", this, &AMialsCharacter::TurnAtRate);
+	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
+	PlayerInputComponent->BindAxis("LookUpRate", this, &AMialsCharacter::LookUpAtRate);
+}
