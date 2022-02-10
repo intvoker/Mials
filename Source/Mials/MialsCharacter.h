@@ -27,6 +27,8 @@ protected:
 
 	void LookUpAtRate(float Rate);
 
+	void FireWeapon();
+
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -46,4 +48,7 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	float BaseLookUpRate;
+
+	UPROPERTY(EditAnywhere)
+	class USoundCue* FireSound;
 };
