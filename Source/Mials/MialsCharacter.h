@@ -51,4 +51,10 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	class USoundCue* FireSound;
+
+	UPROPERTY(EditAnywhere)
+	FName BarrelSocketName;
+	
+	UPROPERTY(EditAnywhere)
+	class UParticleSystem* MuzzleFlash;
 };
