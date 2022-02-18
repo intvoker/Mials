@@ -57,4 +57,10 @@ private:
 	
 	UPROPERTY(EditAnywhere)
 	class UParticleSystem* MuzzleFlash;
+
+	UPROPERTY(EditAnywhere)
+	class UAnimMontage* HipFireMontage;
+
+	UPROPERTY(EditAnywhere)
+	FName StartFireMontageSectionName;
 };

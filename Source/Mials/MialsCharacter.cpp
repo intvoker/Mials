@@ -81,9 +81,16 @@ void AMialsCharacter::FireWeapon()
 		UGameplayStatics::PlaySound2D(this, FireSound);
 	}
 
-	if (MuzzleFlash)
+	if (MuzzleFlash && !BarrelSocketName.IsNone())
 	{
 		UGameplayStatics::SpawnEmitterAttached(MuzzleFlash, GetMesh(), BarrelSocketName);
+	}
+
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && HipFireMontage && !StartFireMontageSectionName.IsNone())
+	{
+		AnimInstance->Montage_Play(HipFireMontage);
+		AnimInstance->Montage_JumpToSection(StartFireMontageSectionName);
 	}
 }
 
