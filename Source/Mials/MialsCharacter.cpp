@@ -3,6 +3,7 @@
 
 #include "MialsCharacter.h"
 
+#include "DrawDebugHelpers.h"
 #include "Camera/CameraComponent.h"
 #include "Engine/SkeletalMeshSocket.h"
 #include "GameFramework/CharacterMovementComponent.h"
@@ -91,6 +92,31 @@ void AMialsCharacter::FireWeapon()
 	{
 		AnimInstance->Montage_Play(HipFireMontage);
 		AnimInstance->Montage_JumpToSection(StartFireMontageSectionName);
+	}
+
+	const USkeletalMeshSocket* Socket = GetMesh()->GetSocketByName(BarrelSocketName);
+	if (Socket)
+	{
+		FTransform SocketTransform = Socket->GetSocketTransform(GetMesh());
+
+		FVector Start{SocketTransform.GetLocation()};
+		FQuat SocketRotation{SocketTransform.GetRotation()};
+		FVector SocketRotationAxis{SocketRotation.GetAxisX()};
+		FVector End{Start + SocketRotationAxis * 50000.f};
+
+		FHitResult HitResult;
+
+		GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility);
+
+		if (HitResult.bBlockingHit)
+		{
+			DrawDebugLine(GetWorld(), Start, HitResult.Location, FColor::Red, true);
+
+			if (ImpactParticles)
+			{
+				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactParticles, HitResult.Location);
+			}
+		}
 	}
 }
 

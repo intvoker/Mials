@@ -54,7 +54,7 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	FName BarrelSocketName;
-	
+
 	UPROPERTY(EditAnywhere)
 	class UParticleSystem* MuzzleFlash;
 
@@ -63,4 +63,7 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	FName StartFireMontageSectionName;
+
+	UPROPERTY(EditAnywhere)
+	class UParticleSystem* ImpactParticles;
 };
