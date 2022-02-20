@@ -9,6 +9,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "Particles/ParticleSystemComponent.h"
 #include "Sound/SoundCue.h"
 
 // Sets default values
@@ -106,15 +107,28 @@ void AMialsCharacter::FireWeapon()
 
 		FHitResult HitResult;
 
+		FVector BeamEndPoint{End};
+
 		GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility);
 
 		if (HitResult.bBlockingHit)
 		{
-			DrawDebugLine(GetWorld(), Start, HitResult.Location, FColor::Red, true);
+			BeamEndPoint = HitResult.Location;
+			//DrawDebugLine(GetWorld(), Start, HitResult.Location, FColor::Red, true);
 
 			if (ImpactParticles)
 			{
-				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactParticles, HitResult.Location);
+				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactParticles, SocketTransform);
+			}
+		}
+
+		if (BeamParticles)
+		{
+			UParticleSystemComponent* Beam = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), BeamParticles, Start);
+
+			if (Beam)
+			{
+				Beam->SetVectorParameter(FName("Target"), BeamEndPoint);
 			}
 		}
 	}
