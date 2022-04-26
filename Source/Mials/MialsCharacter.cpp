@@ -97,40 +97,72 @@ void AMialsCharacter::FireWeapon()
 	}
 
 	const USkeletalMeshSocket* Socket = GetMesh()->GetSocketByName(BarrelSocketName);
-	if (Socket)
+
+	if (!Socket)
+		return;
+
+	FTransform SocketTransform = Socket->GetSocketTransform(GetMesh());
+
+	FVector2D ViewportSize;
+	if (GEngine && GEngine->GameViewport)
 	{
-		FTransform SocketTransform = Socket->GetSocketTransform(GetMesh());
+		GEngine->GameViewport->GetViewportSize(ViewportSize);
+	}
 
-		FVector Start{SocketTransform.GetLocation()};
-		FQuat SocketRotation{SocketTransform.GetRotation()};
-		FVector SocketRotationAxis{SocketRotation.GetAxisX()};
-		FVector End{Start + SocketRotationAxis * 50000.f};
+	FVector2D CrosshairLocation{ViewportSize / 2.f};
+	CrosshairLocation.Y -= 50.f;
 
-		FHitResult HitResult;
+	FVector CrosshairWorldPosition;
+	FVector CrosshairWorldDirection;
 
-		FVector BeamEndPoint{End};
+	bool DeprojectResult = UGameplayStatics::DeprojectScreenToWorld(GetWorld()->GetFirstPlayerController(),
+	                                                                CrosshairLocation,
+	                                                                CrosshairWorldPosition, CrosshairWorldDirection);
 
-		GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility);
+	if (!DeprojectResult)
+		return;
 
-		if (HitResult.bBlockingHit)
+	FVector Start{CrosshairWorldPosition};
+	FVector End{Start + CrosshairWorldDirection * 50000.f};
+
+	FVector BeamStart{SocketTransform.GetLocation()};
+	FVector BeamEnd{End};
+
+	FCollisionQueryParams CollisionQueryParams(NAME_None, true, this);
+
+	FHitResult HitResult;
+	GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECollisionChannel::ECC_Visibility,
+	                                     CollisionQueryParams);
+	if (HitResult.bBlockingHit)
+	{
+		//DrawDebugLine(GetWorld(), Start, HitResult.Location, FColor::Red, true);
+
+		FVector BeamDirection = HitResult.Location - BeamStart;
+		BeamDirection.Normalize();
+		BeamEnd = BeamStart + BeamDirection * 50000.f;
+	}
+
+	FHitResult BeamHitResult;
+	GetWorld()->LineTraceSingleByChannel(BeamHitResult, BeamStart, BeamEnd, ECollisionChannel::ECC_Visibility,
+	                                     CollisionQueryParams);
+	if (BeamHitResult.bBlockingHit)
+	{
+		//DrawDebugLine(GetWorld(), BeamStart, BeamHitResult.Location, FColor::Green, true);
+
+		BeamEnd = BeamHitResult.Location;
+	}
+
+	if (ImpactParticles)
+	{
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactParticles, BeamEnd);
+	}
+
+	if (BeamParticles)
+	{
+		UParticleSystemComponent* Beam = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), BeamParticles, BeamStart);
+		if (Beam)
 		{
-			BeamEndPoint = HitResult.Location;
-			//DrawDebugLine(GetWorld(), Start, HitResult.Location, FColor::Red, true);
-
-			if (ImpactParticles)
-			{
-				UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactParticles, SocketTransform);
-			}
-		}
-
-		if (BeamParticles)
-		{
-			UParticleSystemComponent* Beam = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), BeamParticles, Start);
-
-			if (Beam)
-			{
-				Beam->SetVectorParameter(FName("Target"), BeamEndPoint);
-			}
+			Beam->SetVectorParameter(FName("Target"), BeamEnd);
 		}
 	}
 }
