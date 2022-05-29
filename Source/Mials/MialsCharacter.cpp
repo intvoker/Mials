@@ -103,6 +103,29 @@ void AMialsCharacter::FireWeapon()
 
 	FTransform SocketTransform = Socket->GetSocketTransform(GetMesh());
 
+	FVector BeamStart{SocketTransform.GetLocation()};
+	FVector BeamEnd;
+
+	if (!GetBeamEndLocation(BeamStart, BeamEnd))
+		return;
+
+	if (ImpactParticles)
+	{
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactParticles, BeamEnd);
+	}
+
+	if (BeamParticles)
+	{
+		UParticleSystemComponent* Beam = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), BeamParticles, BeamStart);
+		if (Beam)
+		{
+			Beam->SetVectorParameter(FName("Target"), BeamEnd);
+		}
+	}
+}
+
+bool AMialsCharacter::GetBeamEndLocation(const FVector& BeamStartLocation, FVector& OutBeamEndLocation)
+{
 	FVector2D ViewportSize;
 	if (GEngine && GEngine->GameViewport)
 	{
@@ -120,12 +143,12 @@ void AMialsCharacter::FireWeapon()
 	                                                                CrosshairWorldPosition, CrosshairWorldDirection);
 
 	if (!DeprojectResult)
-		return;
+		return false;
 
 	FVector Start{CrosshairWorldPosition};
 	FVector End{Start + CrosshairWorldDirection * 50000.f};
 
-	FVector BeamStart{SocketTransform.GetLocation()};
+	FVector BeamStart{BeamStartLocation};
 	FVector BeamEnd{End};
 
 	FCollisionQueryParams CollisionQueryParams(NAME_None, true, this);
@@ -152,19 +175,8 @@ void AMialsCharacter::FireWeapon()
 		BeamEnd = BeamHitResult.Location;
 	}
 
-	if (ImpactParticles)
-	{
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ImpactParticles, BeamEnd);
-	}
-
-	if (BeamParticles)
-	{
-		UParticleSystemComponent* Beam = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), BeamParticles, BeamStart);
-		if (Beam)
-		{
-			Beam->SetVectorParameter(FName("Target"), BeamEnd);
-		}
-	}
+	OutBeamEndLocation = BeamEnd;
+	return true;
 }
 
 // Called every frame
