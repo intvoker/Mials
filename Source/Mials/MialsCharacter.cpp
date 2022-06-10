@@ -15,7 +15,10 @@
 // Sets default values
 AMialsCharacter::AMialsCharacter():
 	BaseTurnRate(45.f),
-	BaseLookUpRate(45.f)
+	BaseLookUpRate(45.f),
+	bAiming(false),
+	CameraDefaultFOV(0.f),
+	CameraZoomedFOV(60.f)
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -43,6 +46,11 @@ AMialsCharacter::AMialsCharacter():
 void AMialsCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (FollowCamera)
+	{
+		CameraDefaultFOV = FollowCamera->FieldOfView;
+	}
 }
 
 void AMialsCharacter::MoveForward(float Value)
@@ -179,6 +187,18 @@ bool AMialsCharacter::GetBeamEndLocation(const FVector& BeamStartLocation, FVect
 	return true;
 }
 
+void AMialsCharacter::Aim()
+{
+	bAiming = true;
+	FollowCamera->SetFieldOfView(CameraZoomedFOV);
+}
+
+void AMialsCharacter::StopAiming()
+{
+	bAiming = false;
+	FollowCamera->SetFieldOfView(CameraDefaultFOV);
+}
+
 // Called every frame
 void AMialsCharacter::Tick(float DeltaTime)
 {
@@ -203,4 +223,7 @@ void AMialsCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	PlayerInputComponent->BindAction("Jump", EInputEvent::IE_Released, this, &ACharacter::StopJumping);
 
 	PlayerInputComponent->BindAction("FireButton", EInputEvent::IE_Pressed, this, &AMialsCharacter::FireWeapon);
+
+	PlayerInputComponent->BindAction("Aim", EInputEvent::IE_Pressed, this, &AMialsCharacter::Aim);
+	PlayerInputComponent->BindAction("Aim", EInputEvent::IE_Released, this, &AMialsCharacter::StopAiming);
 }

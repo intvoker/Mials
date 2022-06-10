@@ -31,6 +31,10 @@ protected:
 
 	bool GetBeamEndLocation(const FVector& BeamStartLocation, FVector& OutBeamEndLocation);
 
+	void Aim();
+
+	void StopAiming();
+
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -71,4 +75,13 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	class UParticleSystem* BeamParticles;
+
+	UPROPERTY(VisibleAnywhere)
+	bool bAiming;
+
+	UPROPERTY(VisibleAnywhere)
+	float CameraDefaultFOV;
+
+	UPROPERTY(VisibleAnywhere)
+	float CameraZoomedFOV;
 };
