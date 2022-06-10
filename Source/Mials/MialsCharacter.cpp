@@ -222,7 +222,7 @@ void AMialsCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 	PlayerInputComponent->BindAction("Jump", EInputEvent::IE_Pressed, this, &ACharacter::Jump);
 	PlayerInputComponent->BindAction("Jump", EInputEvent::IE_Released, this, &ACharacter::StopJumping);
 
-	PlayerInputComponent->BindAction("FireButton", EInputEvent::IE_Pressed, this, &AMialsCharacter::FireWeapon);
+	PlayerInputComponent->BindAction("Fire", EInputEvent::IE_Pressed, this, &AMialsCharacter::FireWeapon);
 
 	PlayerInputComponent->BindAction("Aim", EInputEvent::IE_Pressed, this, &AMialsCharacter::Aim);
 	PlayerInputComponent->BindAction("Aim", EInputEvent::IE_Released, this, &AMialsCharacter::StopAiming);
