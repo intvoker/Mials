@@ -35,6 +35,8 @@ protected:
 
 	void StopAiming();
 
+	void CameraZoomInterp(float DeltaTime);
+
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -84,4 +86,9 @@ private:
 
 	UPROPERTY(VisibleAnywhere)
 	float CameraZoomedFOV;
+
+	float CameraCurrentFOV;
+
+	UPROPERTY(EditAnywhere)
+	float ZoomInterpSpeed;
 };

@@ -18,7 +18,9 @@ AMialsCharacter::AMialsCharacter():
 	BaseLookUpRate(45.f),
 	bAiming(false),
 	CameraDefaultFOV(0.f),
-	CameraZoomedFOV(60.f)
+	CameraZoomedFOV(45.f),
+	CameraCurrentFOV(0.f),
+	ZoomInterpSpeed(15.f)
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -50,6 +52,7 @@ void AMialsCharacter::BeginPlay()
 	if (FollowCamera)
 	{
 		CameraDefaultFOV = FollowCamera->FieldOfView;
+		CameraCurrentFOV = CameraDefaultFOV;
 	}
 }
 
@@ -190,19 +193,33 @@ bool AMialsCharacter::GetBeamEndLocation(const FVector& BeamStartLocation, FVect
 void AMialsCharacter::Aim()
 {
 	bAiming = true;
-	FollowCamera->SetFieldOfView(CameraZoomedFOV);
 }
 
 void AMialsCharacter::StopAiming()
 {
 	bAiming = false;
-	FollowCamera->SetFieldOfView(CameraDefaultFOV);
+}
+
+void AMialsCharacter::CameraZoomInterp(float DeltaTime)
+{
+	if (bAiming)
+	{
+		CameraCurrentFOV = FMath::FInterpTo(CameraCurrentFOV, CameraZoomedFOV, DeltaTime, ZoomInterpSpeed);
+		FollowCamera->SetFieldOfView(CameraCurrentFOV);
+	}
+	else if (CameraCurrentFOV < CameraDefaultFOV)
+	{
+		CameraCurrentFOV = FMath::FInterpTo(CameraCurrentFOV, CameraDefaultFOV, DeltaTime, ZoomInterpSpeed);
+		FollowCamera->SetFieldOfView(CameraCurrentFOV);
+	}
 }
 
 // Called every frame
 void AMialsCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	CameraZoomInterp(DeltaTime);
 }
 
 // Called to bind functionality to input
