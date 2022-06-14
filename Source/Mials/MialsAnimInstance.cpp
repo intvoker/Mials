@@ -19,9 +19,9 @@ void UMialsAnimInstance::UpdateAnimationProperties(float DeltaTime)
 		Velocity.Z = 0;
 		Speed = Velocity.Size();
 
-		bIsInAir = MialsCharacter->GetCharacterMovement()->IsFalling();
+		bInAir = MialsCharacter->GetCharacterMovement()->IsFalling();
 
-		bIsAccelerating = MialsCharacter->GetCharacterMovement()->GetCurrentAcceleration().Size() > 0.f;
+		bAccelerating = MialsCharacter->GetCharacterMovement()->GetCurrentAcceleration().Size() > 0.f;
 
 		FRotator AimRotation = MialsCharacter->GetBaseAimRotation();
 		FRotator MovementRotation = UKismetMathLibrary::MakeRotFromX(MialsCharacter->GetVelocity());
