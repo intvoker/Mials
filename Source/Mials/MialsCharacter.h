@@ -44,6 +44,11 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	bool IsAiming() const
+	{
+		return bAiming;
+	}
+
 private:
 	UPROPERTY(VisibleAnywhere)
 	class USpringArmComponent* CameraBoom;

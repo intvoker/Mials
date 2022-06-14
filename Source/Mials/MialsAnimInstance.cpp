@@ -32,6 +32,8 @@ void UMialsAnimInstance::UpdateAnimationProperties(float DeltaTime)
 			LastMovementOffsetYaw = MovementOffsetYaw;
 		}
 
+		bAiming = MialsCharacter->IsAiming();
+
 		/*
 		FString AimRotationMessage = FString::Printf(TEXT("Aim Rotation: %f"), AimRotation.Yaw);
 		FString MovementRotationMessage = FString::Printf(TEXT("Movement Rotation: %f"), MovementRotation.Yaw);
