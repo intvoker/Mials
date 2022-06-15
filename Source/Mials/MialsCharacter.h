@@ -57,10 +57,10 @@ private:
 	class UCameraComponent* FollowCamera;
 
 	UPROPERTY(VisibleAnywhere)
-	float BaseTurnRate;
+	float BaseTurnRate = 45.f;
 
 	UPROPERTY(VisibleAnywhere)
-	float BaseLookUpRate;
+	float BaseLookUpRate = 45.f;
 
 	UPROPERTY(EditAnywhere)
 	class USoundCue* FireSound;
@@ -84,16 +84,17 @@ private:
 	class UParticleSystem* BeamParticles;
 
 	UPROPERTY(VisibleAnywhere)
-	bool bAiming;
+	bool bAiming = false;
 
 	UPROPERTY(VisibleAnywhere)
-	float CameraDefaultFOV;
+	float CameraDefaultFOV = 90.f;
 
 	UPROPERTY(VisibleAnywhere)
-	float CameraZoomedFOV;
-
-	float CameraCurrentFOV;
+	float CameraCurrentFOV = 90.f;
 
 	UPROPERTY(EditAnywhere)
-	float ZoomInterpSpeed;
+	float CameraZoomedFOV = 45.f;
+
+	UPROPERTY(EditAnywhere)
+	float ZoomInterpSpeed = 15.f;
 };

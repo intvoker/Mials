@@ -13,14 +13,7 @@
 #include "Sound/SoundCue.h"
 
 // Sets default values
-AMialsCharacter::AMialsCharacter():
-	BaseTurnRate(45.f),
-	BaseLookUpRate(45.f),
-	bAiming(false),
-	CameraDefaultFOV(0.f),
-	CameraZoomedFOV(45.f),
-	CameraCurrentFOV(0.f),
-	ZoomInterpSpeed(15.f)
+AMialsCharacter::AMialsCharacter()
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
