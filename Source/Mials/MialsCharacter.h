@@ -23,9 +23,15 @@ protected:
 
 	void MoveRight(float Value);
 
+	void Turn(float Value);
+
 	void TurnAtRate(float Rate);
 
+	void LookUp(float Value);
+
 	void LookUpAtRate(float Rate);
+
+	void SetTurnLookUpValuesAndRates();
 
 	void FireWeapon();
 
@@ -56,11 +62,46 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	class UCameraComponent* FollowCamera;
 
-	UPROPERTY(VisibleAnywhere)
-	float BaseTurnRate = 45.f;
 
 	UPROPERTY(VisibleAnywhere)
-	float BaseLookUpRate = 45.f;
+	float CurrentTurnValue = 1.f;
+
+	UPROPERTY(EditAnywhere)
+	float DefaultTurnValue = 1.f;
+
+	UPROPERTY(EditAnywhere)
+	float ZoomedTurnValue = 0.4f;
+
+
+	UPROPERTY(VisibleAnywhere)
+	float CurrentTurnRate = 45.f;
+
+	UPROPERTY(EditAnywhere)
+	float DefaultTurnRate = 45.f;
+
+	UPROPERTY(EditAnywhere)
+	float ZoomedTurnRate = 18.f;
+
+
+	UPROPERTY(VisibleAnywhere)
+	float CurrentLookUpValue = 1.f;
+
+	UPROPERTY(EditAnywhere)
+	float DefaultLookUpValue = 1.f;
+
+	UPROPERTY(EditAnywhere)
+	float ZoomedLookUpValue = 0.4f;
+
+
+	UPROPERTY(VisibleAnywhere)
+	float CurrentLookUpRate = 45.f;
+
+	UPROPERTY(EditAnywhere)
+	float DefaultLookUpRate = 45.f;
+
+	UPROPERTY(EditAnywhere)
+	float ZoomedLookUpRate = 18.f;
+
 
 	UPROPERTY(EditAnywhere)
 	class USoundCue* FireSound;
@@ -87,10 +128,10 @@ private:
 	bool bAiming = false;
 
 	UPROPERTY(VisibleAnywhere)
-	float CameraDefaultFOV = 90.f;
+	float CameraCurrentFOV = 90.f;
 
 	UPROPERTY(VisibleAnywhere)
-	float CameraCurrentFOV = 90.f;
+	float CameraDefaultFOV = 90.f;
 
 	UPROPERTY(EditAnywhere)
 	float CameraZoomedFOV = 45.f;

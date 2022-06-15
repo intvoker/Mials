@@ -71,14 +71,33 @@ void AMialsCharacter::MoveRight(float Value)
 	}
 }
 
+void AMialsCharacter::Turn(float Value)
+{
+	AddControllerYawInput(Value * CurrentTurnValue);
+}
+
 void AMialsCharacter::TurnAtRate(float Rate)
 {
-	AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
+	AddControllerYawInput(Rate * CurrentTurnRate * GetWorld()->GetDeltaSeconds());
+}
+
+void AMialsCharacter::LookUp(float Value)
+{
+	AddControllerPitchInput(Value * CurrentLookUpValue);
 }
 
 void AMialsCharacter::LookUpAtRate(float Rate)
 {
-	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
+	AddControllerPitchInput(Rate * CurrentLookUpRate * GetWorld()->GetDeltaSeconds());
+}
+
+void AMialsCharacter::SetTurnLookUpValuesAndRates()
+{
+	CurrentTurnValue = bAiming ? ZoomedTurnValue : DefaultTurnValue;
+	CurrentTurnRate = bAiming ? ZoomedTurnRate : DefaultTurnRate;
+
+	CurrentLookUpValue = bAiming ? ZoomedLookUpValue : DefaultLookUpValue;
+	CurrentLookUpRate = bAiming ? ZoomedLookUpRate : DefaultLookUpRate;
 }
 
 void AMialsCharacter::FireWeapon()
@@ -186,11 +205,15 @@ bool AMialsCharacter::GetBeamEndLocation(const FVector& BeamStartLocation, FVect
 void AMialsCharacter::Aim()
 {
 	bAiming = true;
+
+	SetTurnLookUpValuesAndRates();
 }
 
 void AMialsCharacter::StopAiming()
 {
 	bAiming = false;
+
+	SetTurnLookUpValuesAndRates();
 }
 
 void AMialsCharacter::CameraZoomInterp(float DeltaTime)
@@ -224,9 +247,9 @@ void AMialsCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &AMialsCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AMialsCharacter::MoveRight);
-	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
+	PlayerInputComponent->BindAxis("Turn", this, &AMialsCharacter::Turn);
 	PlayerInputComponent->BindAxis("TurnRate", this, &AMialsCharacter::TurnAtRate);
-	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
+	PlayerInputComponent->BindAxis("LookUp", this, &AMialsCharacter::LookUp);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &AMialsCharacter::LookUpAtRate);
 
 	PlayerInputComponent->BindAction("Jump", EInputEvent::IE_Pressed, this, &ACharacter::Jump);
